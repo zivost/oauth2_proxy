@@ -46,9 +46,9 @@ func Load(config io.Reader, configType string, args []string) (*Options, error) 
 
 	// Configure loading of environment variables
 	// All flag options are prefixed by the EnvPrefix
-	v.SetEnvPrefix("OAUTH2_PROXY_")
-	// Substitute "-" for "_" so `FOO_BAR` matches the flag `foo-bar`
-	v.SetEnvKeyReplacer(strings.NewReplacer("-", "_"))
+	v.SetEnvPrefix("OAUTH2_PROXY")
+	// Substitute "-" for "_" so `FOO_BAR` matches the config `foo.bar`
+	v.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 	v.AutomaticEnv()
 
 	// Read the configuration file

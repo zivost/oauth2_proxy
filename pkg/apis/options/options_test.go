@@ -3,6 +3,7 @@ package options
 import (
 	"bytes"
 	"io"
+	"os"
 	"testing"
 	"time"
 
@@ -62,6 +63,10 @@ var _ = Describe("Load", func() {
         `))
 		})
 
+		It("returns no error", func() {
+			Expect(err).NotTo(HaveOccurred())
+		})
+
 		It("sets the correct configuration", func() {
 			expected := &CookieOptions{
 				Name:     "cookie_name",
@@ -74,6 +79,37 @@ var _ = Describe("Load", func() {
 				HTTPOnly: false,
 			}
 			Expect(opts.Cookie).To(Equal(expected))
+		})
+
+		Context("with environment configuration", func() {
+			BeforeEach(func() {
+				os.Setenv("OAUTH2_PROXY_COOKIE_NAME", "env_cookie_name")
+				os.Setenv("OAUTH2_PROXY_COOKIE_SECRET", "env_secret_12345")
+				os.Setenv("OAUTH2_PROXY_COOKIE_DOMAIN", "env.example.com")
+				os.Setenv("OAUTH2_PROXY_COOKIE_PATH", "/env")
+				os.Setenv("OAUTH2_PROXY_COOKIE_EXPIRE", "24h")
+				os.Setenv("OAUTH2_PROXY_COOKIE_REFRESH", "2h")
+				os.Setenv("OAUTH2_PROXY_COOKIE_SECURE", "true")
+				os.Setenv("OAUTH2_PROXY_COOKIE_HTTPONLY", "true")
+			})
+
+			It("returns no error", func() {
+				Expect(err).NotTo(HaveOccurred())
+			})
+
+			It("the environment overrides the config file", func() {
+				expected := &CookieOptions{
+					Name:     "env_cookie_name",
+					Secret:   "env_secret_12345",
+					Domain:   "env.example.com",
+					Path:     "/env",
+					Expire:   time.Duration(24) * time.Hour,
+					Refresh:  time.Duration(2) * time.Hour,
+					Secure:   true,
+					HTTPOnly: true,
+				}
+				Expect(opts.Cookie).To(Equal(expected))
+			})
 		})
 
 	})
