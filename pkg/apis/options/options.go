@@ -53,6 +53,10 @@ func Load(config io.Reader, configType string, args []string) (*Options, error) 
 
 	// Read the configuration file
 	if config != nil {
+		if configType == "" {
+			return nil, fmt.Errorf("config-type not set")
+		}
+		v.SetConfigType(configType)
 		v.ReadConfig(config)
 	}
 
