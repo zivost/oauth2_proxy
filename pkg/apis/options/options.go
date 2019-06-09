@@ -29,6 +29,7 @@ func New() *Options {
 // correct configuration options
 func Load(config io.Reader, configType string, args []string) (*Options, error) {
 	flagSet := flag.NewFlagSet("oauth2-proxy", flag.ExitOnError)
+	flagSet.SetNormalizeFunc(wordSepNormalizeFunc)
 
 	// Add FlagSets to main flagSet
 	flagSet.AddFlagSet(cookieFlagSet)
@@ -67,4 +68,15 @@ func Load(config io.Reader, configType string, args []string) (*Options, error) 
 		return nil, fmt.Errorf("error unmarshalling config: %v", err)
 	}
 	return options, nil
+}
+
+// wordSepNormalizeFunc replaces "-" in flags entered with "."
+// This ensures that flags are mapped to the correct values in the Options struct
+func wordSepNormalizeFunc(f *flag.FlagSet, name string) flag.NormalizedName {
+	from := []string{"-"}
+	to := "."
+	for _, sep := range from {
+		name = strings.Replace(name, sep, to, -1)
+	}
+	return flag.NormalizedName(name)
 }

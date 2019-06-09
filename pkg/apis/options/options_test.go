@@ -110,7 +110,41 @@ var _ = Describe("Load", func() {
 				}
 				Expect(opts.Cookie).To(Equal(expected))
 			})
-		})
 
+			Context("with flag configuration", func() {
+				Context("with hyphens", func() {
+					BeforeEach(func() {
+						args = []string{
+							"--cookie-name=flag_cookie_name",
+							"--cookie-secret=flag_secret_1234",
+							"--cookie-domain=flag.example.com",
+							"--cookie-path=/flag",
+							"--cookie-expire=48h",
+							"--cookie-refresh=4h",
+							"--cookie-secure=false",
+							"--cookie-httponly=false",
+						}
+					})
+
+					It("returns no error", func() {
+						Expect(err).NotTo(HaveOccurred())
+					})
+
+					It("the environment overrides the config file", func() {
+						expected := &CookieOptions{
+							Name:     "flag_cookie_name",
+							Secret:   "flag_secret_1234",
+							Domain:   "flag.example.com",
+							Path:     "/flag",
+							Expire:   time.Duration(48) * time.Hour,
+							Refresh:  time.Duration(4) * time.Hour,
+							Secure:   false,
+							HTTPOnly: false,
+						}
+						Expect(opts.Cookie).To(Equal(expected))
+					})
+				})
+			})
+		})
 	})
 })
