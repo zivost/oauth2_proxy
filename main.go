@@ -129,6 +129,8 @@ func main() {
 	flagSet.String("pubjwk-url", "", "JWK pubkey access endpoint: required by login.gov")
 	flagSet.Bool("gcp-healthchecks", false, "Enable GCP/GKE healthcheck endpoints")
 
+	flagSet.String("auth0-domain", "", "the auth0 domain (tenant-name.zone.auth0.com)")
+
 	flagSet.Parse(os.Args[1:])
 
 	if *showVersion {
